@@ -16,7 +16,11 @@ library(party)
 
 ## Part I
 ```{r}
-D1 <- 
+D1 <- read.csv("intelligent_tutor.csv")
+
+#1 No Action
+#2 Monitor
+#3 Intervene
 ```
 
 ##Classification Tree
@@ -29,7 +33,7 @@ c.tree <- rpart(action ~ hint.y + complete, method="class", data=D1) #Notice the
 printcp(c.tree)
 
 #Plot the tree
-post(c.tree, file = "tree.ps", title = "Session Completion Action: 1 - Ask teacher, 2 - Start new session, 3 - Give up")
+post(c.tree, file = "tree.ps", title = "Session Completion Action: 1 - Ask teacher, 2 - Start new session, 3 - Give up") 
 
 ```
 ## Part II
@@ -66,7 +70,7 @@ Upload the data "intelligent_tutor_new.csv". This is a data set of a differnt sa
 ```{r}
 #Upload new data
 
-D2 <- 
+D2 <- read.csv("intelligent_tutor_new.csv")
 
 #Generate predicted advice for new students based on tree generated from old students
 
@@ -75,3 +79,38 @@ D2$prediction <- predict(score_ctree, D2)
 ``` 
 ## Part III
 Compare the predicted advice with the actual advice that these students recieved. What is the difference between the observed and predicted results?
+```{r}
+
+#1 Intervene
+#2 Monitor
+#3 No Action
+
+#Creating Predicted Value Data Frame
+predicted <- as.data.frame(D1[ ,9])
+names(predicted) <-("pv")
+
+#Changing Values to Quantitative Values
+predicted$pv <- as.character(predicted$pv)
+predicted$pv[predicted$pv == "no action"] <- "3" 
+predicted$pv[predicted$pv == "monitor"] <- "2"
+predicted$pv[predicted$pv == "intervene"] <- "1"
+predicted$pv <- as.factor(predicted$pv)
+
+#Creating Actual Values Column
+actual <- as.data.frame(D1[,8])
+names(actual) <- ("av")
+
+#Binding Both Columns Together
+compare <- cbind(predicted, actual)
+
+#Evaluating Models Accuracy on D2
+sum(D2$prediction == "monitor")
+
+#Result is 84, total is 200
+# 84/200 = 42% failure rate, 58% success rate. 
+
+
+
+
+```
+
